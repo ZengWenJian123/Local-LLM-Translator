@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 26 43% 97%;
+  --foreground: 218 31% 17%;
+  --card: 0 0% 100%;
+  --card-foreground: 218 31% 17%;
+  --primary: 186 95% 34%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 210 24% 92%;
+  --secondary-foreground: 218 31% 17%;
+  --muted: 210 24% 94%;
+  --muted-foreground: 217 14% 46%;
+  --accent: 195 72% 91%;
+  --accent-foreground: 218 31% 17%;
+  --destructive: 358 75% 52%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 214 27% 84%;
+  --input: 214 27% 84%;
+  --ring: 186 95% 34%;
+  --radius: 12px;
+}
+
+* {
+  @apply border-border;
+}
+
+body {
+  margin: 0;
+  min-width: 1100px;
+  min-height: 720px;
+  background: radial-gradient(circle at 10% 10%, rgba(0, 173, 181, 0.15), transparent 38%),
+    radial-gradient(circle at 90% 8%, rgba(59, 130, 246, 0.15), transparent 28%), hsl(var(--background));
+  color: hsl(var(--foreground));
+  font-family: 'Segoe UI', 'PingFang SC', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  width: 100%;
+  height: 100vh;
+}
