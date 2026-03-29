@@ -197,8 +197,10 @@ export function TranslatorPage() {
           imageName={ui.imageDraftName}
           imageBase64={ui.imageDraftBase64}
           imageMimeType={ui.imageDraftMimeType}
+          markdownEnabled={ui.markdownOutputEnabled}
           onTextChange={ui.setTextDraft}
           onSetImage={ui.setImageDraft}
+          onToggleMarkdown={() => ui.setMarkdownOutputEnabled(!ui.markdownOutputEnabled)}
           onCopyInput={() => {
             void onCopyInput()
           }}
@@ -211,6 +213,7 @@ export function TranslatorPage() {
           result={translation.result}
           streamedPartial={translation.streamedPartial}
           outputViewMode={ui.outputViewMode}
+          markdownEnabled={ui.markdownOutputEnabled}
           loading={translation.isPending}
           errorMessage={translation.errorMessage}
           sourceImageUrl={
@@ -220,6 +223,7 @@ export function TranslatorPage() {
           }
           sourceImageName={ui.imageDraftName}
           onOutputViewModeChange={ui.setOutputViewMode}
+          onToggleMarkdown={() => ui.setMarkdownOutputEnabled(!ui.markdownOutputEnabled)}
           onCopy={() => {
             void onCopyResult()
           }}

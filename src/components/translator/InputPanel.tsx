@@ -1,8 +1,7 @@
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
 import { motion } from 'framer-motion'
 import { useDropzone } from 'react-dropzone'
-import { useState } from 'react'
-import { Copy, FileImage, Keyboard, Trash2, Type, X, ZoomIn } from 'lucide-react'
+import { Copy, FileCode2, FileImage, Keyboard, Trash2, Type, X, ZoomIn } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
@@ -14,8 +13,10 @@ interface InputPanelProps {
   imageName: string
   imageBase64: string
   imageMimeType: string
+  markdownEnabled: boolean
   onTextChange: (value: string) => void
   onSetImage: (image: { base64: string; mimeType: string; name: string }) => void
+  onToggleMarkdown: () => void
   onCopyInput: () => void
   onClearInput: () => void
 }
@@ -39,11 +40,14 @@ export function InputPanel(props: InputPanelProps) {
     imageName,
     imageBase64,
     imageMimeType,
+    markdownEnabled,
     onTextChange,
     onSetImage,
+    onToggleMarkdown,
     onCopyInput,
     onClearInput,
   } = props
+
   const [previewOpen, setPreviewOpen] = useState(false)
 
   const onImageDrop = useCallback(
@@ -73,11 +77,18 @@ export function InputPanel(props: InputPanelProps) {
   return (
     <Card className="h-full overflow-hidden border-border/70 bg-card/85 shadow-xl backdrop-blur-sm">
       <CardHeader className="border-b border-border/60 bg-gradient-to-r from-cyan-50/70 via-sky-50/40 to-teal-50/60">
-        <CardTitle className="flex items-center gap-2 text-base">
-          <Type className="h-4 w-4 text-primary" />
-          输入区
-        </CardTitle>
+        <div className="flex items-center justify-between gap-2">
+          <CardTitle className="flex items-center gap-2 text-base">
+            <Type className="h-4 w-4 text-primary" />
+            输入区
+          </CardTitle>
+          <Button variant={markdownEnabled ? 'default' : 'outline'} size="sm" onClick={onToggleMarkdown}>
+            <FileCode2 className="mr-1 h-4 w-4" />
+            Markdown 输出
+          </Button>
+        </div>
       </CardHeader>
+
       <CardContent className="relative h-[calc(100%-4rem)] p-4">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_10%,rgba(14,165,233,0.08),transparent_30%),radial-gradient(circle_at_90%_90%,rgba(45,212,191,0.08),transparent_35%)]" />
 

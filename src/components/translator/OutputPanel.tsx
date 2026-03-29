@@ -1,11 +1,14 @@
 import { motion } from 'framer-motion'
 import { useState } from 'react'
-import { Clock3, Copy, Download, RefreshCcw, Save, Sparkles, Trash2, X, ZoomIn } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Select } from '@/components/ui/select'
+import { Clock3, Copy, Download, FileCode2, RefreshCcw, Save, Sparkles, Trash2, X, ZoomIn } from 'lucide-react'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Select } from '@/components/ui/select'
 import { formatElapsed } from '@/lib/format'
+import { cn } from '@/lib/utils'
 import type { InputMode, OutputViewMode, TranslationResult } from '@/types/core'
 
 interface OutputPanelProps {
@@ -13,16 +16,29 @@ interface OutputPanelProps {
   result?: TranslationResult
   streamedPartial: string
   outputViewMode: OutputViewMode
+  markdownEnabled: boolean
   loading: boolean
   errorMessage: string
   sourceImageUrl?: string
   sourceImageName?: string
   onOutputViewModeChange: (mode: OutputViewMode) => void
+  onToggleMarkdown: () => void
   onCopy: () => void
   onClear: () => void
   onExport: () => void
   onSaveHistory: () => void
   onRetranslate: () => void
+}
+
+const markdownClassName =
+  'rounded-xl border border-border/70 bg-white/75 p-4 text-sm leading-6 shadow-inner [&_a]:text-primary [&_a]:underline [&_blockquote]:border-l-2 [&_blockquote]:border-border [&_blockquote]:pl-3 [&_code]:rounded [&_code]:bg-muted [&_code]:px-1 [&_code]:py-0.5 [&_h1]:mb-2 [&_h1]:mt-4 [&_h1]:text-xl [&_h1]:font-semibold [&_h2]:mb-2 [&_h2]:mt-4 [&_h2]:text-lg [&_h2]:font-semibold [&_h3]:mb-1 [&_h3]:mt-3 [&_h3]:text-base [&_h3]:font-semibold [&_hr]:my-3 [&_hr]:border-border [&_li]:mb-1 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-5 [&_p]:my-2 [&_pre]:my-3 [&_pre]:overflow-auto [&_pre]:rounded-md [&_pre]:bg-slate-900 [&_pre]:p-3 [&_pre]:text-slate-100 [&_table]:my-3 [&_table]:w-full [&_table]:border-collapse [&_td]:border [&_td]:border-border [&_td]:p-2 [&_th]:border [&_th]:border-border [&_th]:bg-muted/70 [&_th]:p-2 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-5'
+
+function MarkdownContent({ content, className }: { content: string; className?: string }) {
+  return (
+    <div className={cn(markdownClassName, className)}>
+      <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
+    </div>
+  )
 }
 
 function EmptyState({ loading, errorMessage }: { loading: boolean; errorMessage: string }) {
@@ -39,6 +55,7 @@ function EmptyState({ loading, errorMessage }: { loading: boolean; errorMessage:
       </motion.div>
     )
   }
+
   if (errorMessage) {
     return (
       <div className="rounded-xl border border-destructive/40 bg-destructive/10 p-4 text-sm text-destructive">
@@ -46,6 +63,7 @@ function EmptyState({ loading, errorMessage }: { loading: boolean; errorMessage:
       </div>
     )
   }
+
   return (
     <div className="rounded-xl border border-dashed border-border/80 bg-background/70 p-8 text-center text-sm text-muted-foreground">
       翻译结果将显示在这里
@@ -59,17 +77,20 @@ export function OutputPanel(props: OutputPanelProps) {
     result,
     streamedPartial,
     outputViewMode,
+    markdownEnabled,
     loading,
     errorMessage,
     sourceImageUrl,
     sourceImageName,
     onOutputViewModeChange,
+    onToggleMarkdown,
     onCopy,
     onClear,
     onExport,
     onSaveHistory,
     onRetranslate,
   } = props
+
   const [previewOpen, setPreviewOpen] = useState(false)
   const elapsed = formatElapsed(result?.elapsedMs)
 
@@ -90,6 +111,10 @@ export function OutputPanel(props: OutputPanelProps) {
               <option value="translated-only">仅译文</option>
               <option value="bilingual">双语对照</option>
             </Select>
+            <Button variant={markdownEnabled ? 'default' : 'outline'} size="sm" onClick={onToggleMarkdown}>
+              <FileCode2 className="mr-1 h-4 w-4" />
+              Markdown 输出
+            </Button>
             <Button variant="outline" size="sm" onClick={onCopy} disabled={!result && !streamedPartial}>
               <Copy className="mr-1 h-4 w-4" />
               复制
@@ -113,6 +138,7 @@ export function OutputPanel(props: OutputPanelProps) {
           </div>
         </div>
       </CardHeader>
+
       <CardContent className="relative h-[calc(100%-4.5rem)] space-y-3 p-4">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_85%_8%,rgba(16,185,129,0.08),transparent_30%),radial-gradient(circle_at_5%_85%,rgba(14,165,233,0.07),transparent_34%)]" />
         <div className="relative z-10 h-full space-y-3">
@@ -156,10 +182,15 @@ export function OutputPanel(props: OutputPanelProps) {
                   {elapsed.milliseconds}
                 </span>
               </div>
+
               {outputViewMode === 'translated-only' ? (
-                <pre className="max-h-[470px] overflow-auto whitespace-pre-wrap rounded-xl border border-border/70 bg-white/75 p-4 text-sm leading-6 shadow-inner">
-                  {result.plainText}
-                </pre>
+                markdownEnabled ? (
+                  <MarkdownContent content={result.plainText} className="max-h-[470px] overflow-auto" />
+                ) : (
+                  <pre className="max-h-[470px] overflow-auto whitespace-pre-wrap rounded-xl border border-border/70 bg-white/75 p-4 text-sm leading-6 shadow-inner">
+                    {result.plainText}
+                  </pre>
+                )
               ) : (
                 <div className="max-h-[470px] space-y-2 overflow-auto pr-1">
                   {result.segments.map((segment) => (
@@ -172,7 +203,11 @@ export function OutputPanel(props: OutputPanelProps) {
                       <p className="mb-2 text-[11px] uppercase tracking-wide text-muted-foreground">原文</p>
                       <p className="text-sm leading-6">{segment.sourceText}</p>
                       <p className="mb-2 mt-3 text-[11px] uppercase tracking-wide text-muted-foreground">译文</p>
-                      <p className="text-sm leading-6">{segment.translatedText}</p>
+                      {markdownEnabled ? (
+                        <MarkdownContent content={segment.translatedText} className="bg-transparent p-0 shadow-none" />
+                      ) : (
+                        <p className="text-sm leading-6">{segment.translatedText}</p>
+                      )}
                     </motion.div>
                   ))}
                 </div>
@@ -181,9 +216,13 @@ export function OutputPanel(props: OutputPanelProps) {
           ) : null}
 
           {!result && streamedPartial ? (
-            <pre className="max-h-[460px] overflow-auto whitespace-pre-wrap rounded-xl border border-border/70 bg-white/75 p-4 text-sm leading-6 shadow-inner">
-              {streamedPartial}
-            </pre>
+            markdownEnabled ? (
+              <MarkdownContent content={streamedPartial} className="max-h-[460px] overflow-auto" />
+            ) : (
+              <pre className="max-h-[460px] overflow-auto whitespace-pre-wrap rounded-xl border border-border/70 bg-white/75 p-4 text-sm leading-6 shadow-inner">
+                {streamedPartial}
+              </pre>
+            )
           ) : null}
         </div>
       </CardContent>

@@ -7,6 +7,7 @@ interface UiState {
   sourceLanguage: Language
   targetLanguage: TargetLanguage
   outputViewMode: OutputViewMode
+  markdownOutputEnabled: boolean
   historyOpen: boolean
   settingsOpen: boolean
   textDraft: string
@@ -16,6 +17,7 @@ interface UiState {
   setInputMode: (inputMode: InputMode) => void
   setLanguages: (sourceLanguage: Language, targetLanguage: TargetLanguage) => void
   setOutputViewMode: (outputViewMode: OutputViewMode) => void
+  setMarkdownOutputEnabled: (enabled: boolean) => void
   setHistoryOpen: (historyOpen: boolean) => void
   setSettingsOpen: (settingsOpen: boolean) => void
   setTextDraft: (textDraft: string) => void
@@ -34,6 +36,7 @@ export const useUiStore = create<UiState>()(
       sourceLanguage: 'auto',
       targetLanguage: 'zh',
       outputViewMode: 'translated-only',
+      markdownOutputEnabled: false,
       historyOpen: false,
       settingsOpen: false,
       textDraft: '',
@@ -43,6 +46,7 @@ export const useUiStore = create<UiState>()(
       setInputMode: (inputMode) => set({ inputMode: inputMode === 'document' ? 'text' : inputMode }),
       setLanguages: (sourceLanguage, targetLanguage) => set({ sourceLanguage, targetLanguage }),
       setOutputViewMode: (outputViewMode) => set({ outputViewMode }),
+      setMarkdownOutputEnabled: (enabled) => set({ markdownOutputEnabled: enabled }),
       setHistoryOpen: (historyOpen) => set({ historyOpen }),
       setSettingsOpen: (settingsOpen) => set({ settingsOpen }),
       setTextDraft: (textDraft) => set({ textDraft }),
@@ -66,6 +70,7 @@ export const useUiStore = create<UiState>()(
         sourceLanguage: state.sourceLanguage,
         targetLanguage: state.targetLanguage,
         outputViewMode: state.outputViewMode,
+        markdownOutputEnabled: state.markdownOutputEnabled,
         textDraft: state.textDraft,
         imageDraftBase64: state.imageDraftBase64,
         imageDraftMimeType: state.imageDraftMimeType,
