@@ -1,10 +1,11 @@
 import { motion } from 'framer-motion'
 import { useState } from 'react'
-import { Copy, Download, RefreshCcw, Save, Sparkles, Trash2, X, ZoomIn } from 'lucide-react'
+import { Clock3, Copy, Download, RefreshCcw, Save, Sparkles, Trash2, X, ZoomIn } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Select } from '@/components/ui/select'
 import { Badge } from '@/components/ui/badge'
+import { formatElapsed } from '@/lib/format'
 import type { InputMode, OutputViewMode, TranslationResult } from '@/types/core'
 
 interface OutputPanelProps {
@@ -70,6 +71,7 @@ export function OutputPanel(props: OutputPanelProps) {
     onRetranslate,
   } = props
   const [previewOpen, setPreviewOpen] = useState(false)
+  const elapsed = formatElapsed(result?.elapsedMs)
 
   return (
     <Card className="h-full overflow-hidden border-border/70 bg-card/90 shadow-xl backdrop-blur-sm">
@@ -143,7 +145,16 @@ export function OutputPanel(props: OutputPanelProps) {
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 <Badge variant="secondary">{result.provider}</Badge>
                 <Badge variant="outline">{result.model}</Badge>
-                <span>耗时 {result.elapsedMs} ms</span>
+                <span className="inline-flex items-center gap-1 rounded-full border border-cyan-200 bg-cyan-50 px-2 py-0.5 text-cyan-700">
+                  <Clock3 className="h-3 w-3" />
+                  耗时
+                </span>
+                <span className="rounded-full bg-emerald-50 px-2 py-0.5 font-medium text-emerald-700">
+                  {elapsed.seconds}
+                </span>
+                <span className="rounded-full bg-sky-50 px-2 py-0.5 font-medium text-sky-700">
+                  {elapsed.milliseconds}
+                </span>
               </div>
               {outputViewMode === 'translated-only' ? (
                 <pre className="max-h-[470px] overflow-auto whitespace-pre-wrap rounded-xl border border-border/70 bg-white/75 p-4 text-sm leading-6 shadow-inner">

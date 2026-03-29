@@ -1,5 +1,9 @@
 # Local Translate (Tauri + React)
 
+<p align="left">
+  <img src="public/logo-translate.svg" alt="Local Translate Logo" width="84" />
+</p>
+
 本仓库已按 `P0 + P1` 目标搭建 0→1 基础实现，覆盖：
 
 - 设置管理（Provider + App Settings）
@@ -19,7 +23,13 @@
 
 ## 页面截图
 
-![Web 页面截图](docs/screenshots/web-home.png)
+### 主页
+
+![Web 首页截图](docs/screenshots/web-home.png)
+
+### 设置页
+
+![Web 设置页截图](docs/screenshots/web-settings.png)
 
 ## 目录结构
 

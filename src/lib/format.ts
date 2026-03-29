@@ -16,3 +16,25 @@ export function previewText(text: string, length = 80): string {
   if (normalized.length <= length) return normalized
   return `${normalized.slice(0, length)}...`
 }
+
+export interface ElapsedDisplay {
+  seconds: string
+  milliseconds: string
+  label: string
+}
+
+export function formatElapsed(elapsedMs?: number): ElapsedDisplay {
+  if (typeof elapsedMs !== 'number') {
+    return {
+      seconds: '--',
+      milliseconds: '--',
+      label: '--',
+    }
+  }
+
+  return {
+    seconds: `${(elapsedMs / 1000).toFixed(3)}s`,
+    milliseconds: `${elapsedMs}ms`,
+    label: `${(elapsedMs / 1000).toFixed(3)} s · ${elapsedMs} ms`,
+  }
+}

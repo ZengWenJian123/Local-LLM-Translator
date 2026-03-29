@@ -48,9 +48,16 @@ export function TopToolbar(props: TopToolbarProps) {
       className="rounded-lg border border-border bg-card p-4"
     >
       <div className="mb-3 flex items-center justify-between">
-        <div>
-          <h1 className="text-xl font-semibold">Local Translate</h1>
-          <p className="text-xs text-muted-foreground">Powered by OpenAI-compatible Models</p>
+        <div className="flex items-center gap-3">
+          <img
+            src="/logo-translate.svg"
+            alt="Local Translate Logo"
+            className="h-11 w-11 rounded-xl border border-cyan-200/60 bg-white/90 p-1 shadow-sm"
+          />
+          <div>
+            <h1 className="text-xl font-semibold">Local Translate</h1>
+            <p className="text-xs text-muted-foreground">Powered by OpenAI-compatible Models</p>
+          </div>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="ghost" size="sm" onClick={onOpenHistory}>
