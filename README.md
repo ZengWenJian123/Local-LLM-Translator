@@ -19,7 +19,13 @@
 
 ## 页面截图
 
-![Web 页面截图](docs/screenshots/web-home.png)
+### 主页
+
+![Web 首页截图](docs/screenshots/web-home.png)
+
+### 设置页
+
+![Web 设置页截图](docs/screenshots/web-settings.png)
 
 ## 目录结构
 
