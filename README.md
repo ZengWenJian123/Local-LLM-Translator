@@ -2,7 +2,6 @@
 
 本仓库已按 `P0 + P1` 目标搭建 0→1 基础实现，覆盖：
 
-- 文本 / 图片翻译主流程
 - 设置管理（Provider + App Settings）
 - 历史记录（保存 / 搜索 / 收藏 / 删除 / 重载）
 - 导出（txt / md / docx）
@@ -17,12 +16,6 @@
 - Form: React Hook Form + Zod
 - Storage: SQLite (Rust/rusqlite)
 - Model: LM Studio (OpenAI-compatible API)
-
-## Web 页面截图
-
-![Local Translate Web](./docs/screenshots/web-home.png)
-
-> 截图生成时间：2026-03-29，来源：本地 `vite preview` 渲染页面。
 
 ## 目录结构
 
