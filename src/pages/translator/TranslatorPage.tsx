@@ -24,7 +24,6 @@ export function TranslatorPage() {
   const queryClient = useQueryClient()
   const [historySearch, setHistorySearch] = useState('')
   const [providerConnected, setProviderConnected] = useState(true)
-  const [availableModels, setAvailableModels] = useState<string[]>([])
 
   const ui = useUiStore()
   const translation = useTranslation()
@@ -276,7 +275,6 @@ export function TranslatorPage() {
             provider={providerQuery.data}
             settings={settingsQuery.data}
             testingConnection={connectionMutation.isPending}
-            availableModels={availableModels}
             onSaveProvider={async (input) => {
               await saveProviderConfig(input)
               await queryClient.invalidateQueries({ queryKey: ['provider-config'] })
@@ -295,12 +293,9 @@ export function TranslatorPage() {
                 try {
                   const descriptors = await listProviderModels(input)
                   models = descriptors.map((item) => item.name || item.id).filter(Boolean)
-                  setAvailableModels(models)
                 } catch (error) {
                   await notify(`模型列表拉取失败：${normalizeErrorMessage(error)}`)
                 }
-              } else {
-                setAvailableModels([])
               }
 
               return {

@@ -5,7 +5,6 @@ interface SettingsPageProps {
   provider: ProviderConfig
   settings: AppSettings
   testingConnection: boolean
-  availableModels: string[]
   onSaveProvider: (input: ProviderConfig) => Promise<void>
   onSaveSettings: (input: AppSettings) => Promise<void>
   onTestConnection: (
