@@ -159,14 +159,6 @@ npm run tauri:build
 - `files_*`: 文档解析
 - `export_*`: 结果导出
 
-## 里程碑回看清单（防失忆）
-
-- 阶段 1（骨架）：回看 [Development.md](./PRDs/Development.md) 第 3/4/6/17/20 节、[ui.md](./PRDs/ui.md) 第 3/4/11/14 节。
-- 阶段 2（设置+Provider）：回看 [Development.md](./PRDs/Development.md) 第 5.3/5.6/11.1/12 节、[prd.md](./PRDs/prd.md) 第 2.3 节、[ui.md](./PRDs/ui.md) 第 7.2.1 节。
-- 阶段 3（文本主链路）：回看 [Development.md](./PRDs/Development.md) 第 9.1/10/14 节、[prd.md](./PRDs/prd.md) 第 2.1.1/2.2.1/2.4 节、[ui.md](./PRDs/ui.md) 第 5.1/5.2.1/5.3 节。
-- 阶段 4（历史与体验）：回看 [Development.md](./PRDs/Development.md) 第 5.5/11/18 节、[prd.md](./PRDs/prd.md) 第 2.2.3/3.3 节、[ui.md](./PRDs/ui.md) 第 6/12.1 节。
-- 阶段 5（图片/文档）：回看 [Development.md](./PRDs/Development.md) 第 3.6/3.7/9.2/9.3 节、[prd.md](./PRDs/prd.md) 第 2.1.2/2.1.3/3.6/3.7 节、[ui.md](./PRDs/ui.md) 第 5.2.2/5.2.3/8.2/8.3 节。
-- 阶段 6（冲刺发布）：回看 [Development.md](./PRDs/Development.md) 第 14/15/16/18 节、[prd.md](./PRDs/prd.md) 第 12 节、[ui.md](./PRDs/ui.md) 第 9/10/13 节。
 
 ## 当前注意事项
 
