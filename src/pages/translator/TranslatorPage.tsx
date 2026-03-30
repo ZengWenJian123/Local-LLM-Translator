@@ -7,13 +7,13 @@ import { OutputPanel } from '@/components/translator/OutputPanel'
 import { StatusBar } from '@/components/translator/StatusBar'
 import { TopToolbar } from '@/components/translator/TopToolbar'
 import { Drawer } from '@/components/ui/drawer'
+import { useTranslation } from '@/hooks/useTranslation'
 import { normalizeErrorMessage } from '@/lib/errors'
+import { useUiStore } from '@/stores/ui-store'
 import { exportResult } from '@/services/export-service'
-import { listHistory, removeHistory, saveHistory, toggleHistoryFavorite, buildHistoryRecord } from '@/services/history-service'
+import { buildHistoryRecord, listHistory, removeHistory, saveHistory, toggleHistoryFavorite } from '@/services/history-service'
 import { listProviderModels, testProviderConnection } from '@/services/provider-service'
 import { getAppSettings, getProviderConfig, saveAppSettings, saveProviderConfig } from '@/services/settings-service'
-import { useTranslation } from '@/hooks/useTranslation'
-import { useUiStore } from '@/stores/ui-store'
 import type { TranslateInput } from '@/types/core'
 
 async function notify(message: string): Promise<void> {
@@ -29,7 +29,6 @@ export function TranslatorPage() {
   const ui = useUiStore()
   const translation = useTranslation()
 
-  // Old persisted data may still contain `document`; force fallback to text mode.
   useEffect(() => {
     if (ui.inputMode === 'document') {
       ui.setInputMode('text')
@@ -59,7 +58,7 @@ export function TranslatorPage() {
     if (ui.inputMode === 'text') return ui.textDraft.trim().length > 0
     if (ui.inputMode === 'image') return ui.imageDraftBase64.length > 0
     return false
-  }, [providerQuery.data?.enabled, ui.inputMode, ui.textDraft, ui.imageDraftBase64])
+  }, [providerQuery.data?.enabled, ui.imageDraftBase64, ui.inputMode, ui.textDraft])
 
   async function buildTranslateInput(): Promise<TranslateInput> {
     if (ui.inputMode === 'text') {
@@ -197,8 +196,10 @@ export function TranslatorPage() {
           imageName={ui.imageDraftName}
           imageBase64={ui.imageDraftBase64}
           imageMimeType={ui.imageDraftMimeType}
+          markdownPreviewEnabled={ui.inputMarkdownPreviewEnabled}
           onTextChange={ui.setTextDraft}
           onSetImage={ui.setImageDraft}
+          onToggleMarkdownPreview={() => ui.setInputMarkdownPreviewEnabled(!ui.inputMarkdownPreviewEnabled)}
           onCopyInput={() => {
             void onCopyInput()
           }}
@@ -219,7 +220,9 @@ export function TranslatorPage() {
               : undefined
           }
           sourceImageName={ui.imageDraftName}
+          markdownEnabled={ui.outputMarkdownEnabled}
           onOutputViewModeChange={ui.setOutputViewMode}
+          onToggleMarkdown={() => ui.setOutputMarkdownEnabled(!ui.outputMarkdownEnabled)}
           onCopy={() => {
             void onCopyResult()
           }}

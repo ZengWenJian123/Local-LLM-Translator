@@ -1,10 +1,10 @@
-import { useCallback } from 'react'
+import { useCallback, useState } from 'react'
 import { motion } from 'framer-motion'
 import { useDropzone } from 'react-dropzone'
-import { useState } from 'react'
-import { Copy, FileImage, Keyboard, Trash2, Type, X, ZoomIn } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Copy, FileImage, FileText, Keyboard, Trash2, Type, X, ZoomIn } from 'lucide-react'
+import { MarkdownContent } from '@/components/common/MarkdownContent'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
 import type { InputMode } from '@/types/core'
 
@@ -14,8 +14,10 @@ interface InputPanelProps {
   imageName: string
   imageBase64: string
   imageMimeType: string
+  markdownPreviewEnabled: boolean
   onTextChange: (value: string) => void
   onSetImage: (image: { base64: string; mimeType: string; name: string }) => void
+  onToggleMarkdownPreview: () => void
   onCopyInput: () => void
   onClearInput: () => void
 }
@@ -39,8 +41,10 @@ export function InputPanel(props: InputPanelProps) {
     imageName,
     imageBase64,
     imageMimeType,
+    markdownPreviewEnabled,
     onTextChange,
     onSetImage,
+    onToggleMarkdownPreview,
     onCopyInput,
     onClearInput,
   } = props
@@ -91,6 +95,14 @@ export function InputPanel(props: InputPanelProps) {
               <span>字符数：{textDraft.length}</span>
             </div>
             <div className="flex items-center justify-end gap-2">
+              <Button
+                variant={markdownPreviewEnabled ? 'secondary' : 'outline'}
+                size="sm"
+                onClick={onToggleMarkdownPreview}
+              >
+                <FileText className="mr-1 h-4 w-4" />
+                Markdown
+              </Button>
               <Button variant="outline" size="sm" onClick={onCopyInput} disabled={!textDraft.trim()}>
                 <Copy className="mr-1 h-4 w-4" />
                 复制
@@ -100,12 +112,24 @@ export function InputPanel(props: InputPanelProps) {
                 清空
               </Button>
             </div>
-            <Textarea
-              value={textDraft}
-              onChange={(event) => onTextChange(event.target.value)}
-              className="min-h-[420px] resize-none border-border/70 bg-white/75 shadow-inner"
-              placeholder="在这里输入待翻译文本..."
-            />
+            {markdownPreviewEnabled ? (
+              <div className="min-h-[420px] overflow-auto rounded-xl border border-border/70 bg-white/75 p-4 shadow-inner">
+                {textDraft.trim() ? (
+                  <MarkdownContent content={textDraft} />
+                ) : (
+                  <div className="flex min-h-[388px] items-center justify-center text-sm text-muted-foreground">
+                    Markdown 预览将显示在这里
+                  </div>
+                )}
+              </div>
+            ) : (
+              <Textarea
+                value={textDraft}
+                onChange={(event) => onTextChange(event.target.value)}
+                className="min-h-[420px] resize-none border-border/70 bg-white/75 shadow-inner"
+                placeholder="在这里输入待翻译文本..."
+              />
+            )}
             <div className="text-right text-xs text-muted-foreground">长文本将自动分段翻译</div>
           </motion.div>
         )}

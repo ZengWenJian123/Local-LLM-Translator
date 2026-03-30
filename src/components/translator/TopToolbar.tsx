@@ -1,4 +1,4 @@
-import { ArrowLeftRight, History, Languages, Settings2, Play, Square } from 'lucide-react'
+import { ArrowLeftRight, History, Languages, Play, Settings2, Square } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Select } from '@/components/ui/select'
@@ -56,7 +56,7 @@ export function TopToolbar(props: TopToolbarProps) {
           />
           <div>
             <h1 className="text-xl font-semibold">Local Translate</h1>
-            <p className="text-xs text-muted-foreground">Powered by OpenAI-compatible Models</p>
+            <p className="text-xs text-muted-foreground">基于 OpenAI 兼容模型</p>
           </div>
         </div>
         <div className="flex items-center gap-2">

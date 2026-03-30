@@ -105,7 +105,7 @@ export function ProviderConfigForm(props: ProviderConfigFormProps) {
                 <Input {...providerForm.register('apiKey')} type="password" placeholder="可选" />
               </label>
               <label className="text-sm">
-                Model Name
+                模型名称
                 {modelOptions.length > 0 ? (
                   <Select
                     value={providerForm.watch('model')}
@@ -118,11 +118,11 @@ export function ProviderConfigForm(props: ProviderConfigFormProps) {
                     ))}
                   </Select>
                 ) : (
-                  <Input {...providerForm.register('model')} placeholder="先测试连接加载可用模型" />
+                  <Input {...providerForm.register('model')} placeholder="先测试连接后加载可用模型" />
                 )}
               </label>
               <label className="text-sm">
-                Timeout(ms)
+                超时（毫秒）
                 <Input
                   type="number"
                   value={providerForm.watch('timeoutMs')}
@@ -150,7 +150,11 @@ export function ProviderConfigForm(props: ProviderConfigFormProps) {
                 })}
                 disabled={testingConnection}
               >
-                {testingConnection ? <Loader2 className="mr-1 h-4 w-4 animate-spin" /> : <PlugZap className="mr-1 h-4 w-4" />}
+                {testingConnection ? (
+                  <Loader2 className="mr-1 h-4 w-4 animate-spin" />
+                ) : (
+                  <PlugZap className="mr-1 h-4 w-4" />
+                )}
                 测试连接
               </Button>
             </div>
@@ -165,9 +169,7 @@ export function ProviderConfigForm(props: ProviderConfigFormProps) {
               >
                 <div>{connectionFeedback.message}</div>
                 {connectionFeedback.models.length > 0 ? (
-                  <div className="mt-1 text-xs">
-                    可用模型：{connectionFeedback.models.join('、')}
-                  </div>
+                  <div className="mt-1 text-xs">可用模型：{connectionFeedback.models.join('、')}</div>
                 ) : null}
               </div>
             ) : null}
@@ -204,7 +206,9 @@ export function ProviderConfigForm(props: ProviderConfigFormProps) {
               默认输出模式
               <Select
                 value={settingsForm.watch('outputViewMode')}
-                onChange={(event) => settingsForm.setValue('outputViewMode', event.target.value as AppSettings['outputViewMode'])}
+                onChange={(event) =>
+                  settingsForm.setValue('outputViewMode', event.target.value as AppSettings['outputViewMode'])
+                }
               >
                 <option value="translated-only">仅译文</option>
                 <option value="bilingual">双语对照</option>
@@ -237,7 +241,7 @@ export function ProviderConfigForm(props: ProviderConfigFormProps) {
                 onChange={(event) => settingsForm.setValue('enableCtrlEnterTranslate', event.target.checked)}
               />
               <Switch
-                label="保留术语一致性提示"
+                label="保持术语一致性"
                 checked={settingsForm.watch('keepTerminologyConsistency')}
                 onChange={(event) => settingsForm.setValue('keepTerminologyConsistency', event.target.checked)}
               />
