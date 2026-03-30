@@ -1,10 +1,20 @@
 import { z } from 'zod'
 
+const baseUrlSchema = z.string().min(1, '请填写 Base URL').refine((value) => {
+  if (value.startsWith('/')) return true
+  try {
+    const parsed = new URL(value)
+    return parsed.protocol === 'http:' || parsed.protocol === 'https:'
+  } catch {
+    return false
+  }
+}, '请填写有效的 Base URL')
+
 export const providerConfigSchema = z.object({
   id: z.string().min(1),
   name: z.string().min(1, 'Provider 名称不能为空'),
   providerType: z.enum(['lmstudio', 'openai-compatible']),
-  baseURL: z.url('请填写有效的 Base URL'),
+  baseURL: baseUrlSchema,
   apiKey: z.string().optional(),
   model: z.string().min(1, '模型名称不能为空'),
   timeoutMs: z.number().int().min(1_000).max(300_000),

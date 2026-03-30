@@ -89,16 +89,16 @@ export function OutputPanel(props: OutputPanelProps) {
   }
 
   return (
-    <Card className="h-full overflow-hidden border-border/70 bg-card/90 shadow-xl backdrop-blur-sm">
+    <Card className="h-auto overflow-hidden border-border/70 bg-card/90 shadow-xl backdrop-blur-sm lg:h-full">
       <CardHeader className="border-b border-border/60 bg-gradient-to-r from-emerald-50/70 via-cyan-50/40 to-sky-50/70 pb-3">
-        <div className="flex items-center justify-between gap-2">
+        <div className="flex flex-col gap-2 lg:flex-row lg:items-center lg:justify-between">
           <CardTitle className="flex items-center gap-2 text-base">
             <Sparkles className="h-4 w-4 text-primary" />
             输出区
           </CardTitle>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <Select
-              className="h-9 w-[130px] border-border/70 bg-background/75"
+              className="h-9 w-full border-border/70 bg-background/75 sm:w-[130px]"
               value={outputViewMode}
               onChange={(event) => onOutputViewModeChange(event.target.value as OutputViewMode)}
             >
@@ -132,7 +132,7 @@ export function OutputPanel(props: OutputPanelProps) {
           </div>
         </div>
       </CardHeader>
-      <CardContent className="relative h-[calc(100%-4.5rem)] space-y-3 p-4">
+      <CardContent className="relative h-auto space-y-3 p-4 lg:h-[calc(100%-4.5rem)]">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_85%_8%,rgba(16,185,129,0.08),transparent_30%),radial-gradient(circle_at_5%_85%,rgba(14,165,233,0.07),transparent_34%)]" />
         <div className="relative z-10 h-full space-y-3">
           {mode === 'image' && sourceImageUrl ? (
@@ -180,16 +180,16 @@ export function OutputPanel(props: OutputPanelProps) {
               </div>
               {outputViewMode === 'translated-only' ? (
                 markdownEnabled ? (
-                  <div className="max-h-[470px] overflow-auto rounded-xl border border-border/70 bg-white/75 p-4 shadow-inner">
+                  <div className="max-h-[55vh] overflow-auto rounded-xl border border-border/70 bg-white/75 p-4 shadow-inner lg:max-h-[470px]">
                     <MarkdownContent content={result.plainText} />
                   </div>
                 ) : (
-                  <pre className="max-h-[470px] overflow-auto whitespace-pre-wrap rounded-xl border border-border/70 bg-white/75 p-4 text-sm leading-6 shadow-inner">
+                  <pre className="max-h-[55vh] overflow-auto whitespace-pre-wrap rounded-xl border border-border/70 bg-white/75 p-4 text-sm leading-6 shadow-inner lg:max-h-[470px]">
                     {result.plainText}
                   </pre>
                 )
               ) : (
-                <div className="max-h-[470px] space-y-2 overflow-auto pr-1">
+                <div className="max-h-[55vh] space-y-2 overflow-auto pr-1 lg:max-h-[470px]">
                   {result.segments.map((segment) => (
                     <motion.div
                       key={segment.index}
@@ -214,11 +214,11 @@ export function OutputPanel(props: OutputPanelProps) {
 
           {!result && streamedPartial ? (
             markdownEnabled ? (
-              <div className="max-h-[460px] overflow-auto rounded-xl border border-border/70 bg-white/75 p-4 shadow-inner">
+              <div className="max-h-[55vh] overflow-auto rounded-xl border border-border/70 bg-white/75 p-4 shadow-inner lg:max-h-[460px]">
                 <MarkdownContent content={streamedPartial} />
               </div>
             ) : (
-              <pre className="max-h-[460px] overflow-auto whitespace-pre-wrap rounded-xl border border-border/70 bg-white/75 p-4 text-sm leading-6 shadow-inner">
+              <pre className="max-h-[55vh] overflow-auto whitespace-pre-wrap rounded-xl border border-border/70 bg-white/75 p-4 text-sm leading-6 shadow-inner lg:max-h-[460px]">
                 {streamedPartial}
               </pre>
             )

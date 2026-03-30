@@ -15,6 +15,19 @@ describe('settings schema', () => {
     expect(parsed.name).toBe('LM Studio')
   })
 
+  it('accepts /lmstudio as baseURL', () => {
+    const parsed = providerConfigSchema.parse({
+      id: 'p2',
+      name: 'LM Studio',
+      providerType: 'lmstudio',
+      baseURL: '/lmstudio',
+      model: 'qwen3.5',
+      timeoutMs: 10_000,
+      enabled: true,
+    })
+    expect(parsed.baseURL).toBe('/lmstudio')
+  })
+
   it('rejects invalid history limit', () => {
     const result = appSettingsSchema.safeParse({
       defaultTargetLanguage: 'zh',

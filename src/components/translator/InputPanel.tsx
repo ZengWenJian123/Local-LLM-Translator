@@ -83,14 +83,14 @@ export function InputPanel(props: InputPanelProps) {
   }
 
   return (
-    <Card className="h-full overflow-hidden border-border/70 bg-card/85 shadow-xl backdrop-blur-sm">
+    <Card className="h-auto overflow-hidden border-border/70 bg-card/85 shadow-xl backdrop-blur-sm lg:h-full">
       <CardHeader className="border-b border-border/60 bg-gradient-to-r from-cyan-50/70 via-sky-50/40 to-teal-50/60">
         <CardTitle className="flex items-center gap-2 text-base">
           <Type className="h-4 w-4 text-primary" />
           输入区
         </CardTitle>
       </CardHeader>
-      <CardContent className="relative h-[calc(100%-4rem)] p-4">
+      <CardContent className="relative h-auto p-4 lg:h-[calc(100%-4rem)]">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_10%,rgba(14,165,233,0.08),transparent_30%),radial-gradient(circle_at_90%_90%,rgba(45,212,191,0.08),transparent_35%)]" />
 
         {mode === 'text' && (
@@ -121,11 +121,11 @@ export function InputPanel(props: InputPanelProps) {
               </Button>
             </div>
             {markdownPreviewEnabled ? (
-              <div className="min-h-[420px] overflow-auto rounded-xl border border-border/70 bg-white/75 p-4 shadow-inner">
+              <div className="min-h-[260px] overflow-auto rounded-xl border border-border/70 bg-white/75 p-4 shadow-inner lg:min-h-[420px]">
                 {textDraft.trim() ? (
                   <MarkdownContent content={textDraft} />
                 ) : (
-                  <div className="flex min-h-[388px] items-center justify-center text-sm text-muted-foreground">
+                  <div className="flex min-h-[228px] items-center justify-center text-sm text-muted-foreground lg:min-h-[388px]">
                     Markdown 预览将显示在这里
                   </div>
                 )}
@@ -134,7 +134,7 @@ export function InputPanel(props: InputPanelProps) {
               <Textarea
                 value={textDraft}
                 onChange={(event) => onTextChange(event.target.value)}
-                className="min-h-[420px] resize-none border-border/70 bg-white/75 shadow-inner"
+                className="min-h-[260px] resize-none border-border/70 bg-white/75 shadow-inner lg:min-h-[420px]"
                 placeholder="在这里输入待翻译文本..."
               />
             )}
@@ -146,7 +146,7 @@ export function InputPanel(props: InputPanelProps) {
           <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="relative z-10 space-y-3">
             <div
               {...imageDropzone.getRootProps()}
-              className="group flex min-h-[260px] cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed border-cyan-400/55 bg-gradient-to-br from-cyan-50/90 via-white to-sky-50/70 p-5 text-center shadow-sm transition hover:border-cyan-500/70 hover:shadow-md"
+              className="group flex min-h-[220px] cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed border-cyan-400/55 bg-gradient-to-br from-cyan-50/90 via-white to-sky-50/70 p-5 text-center shadow-sm transition hover:border-cyan-500/70 hover:shadow-md sm:min-h-[260px]"
             >
               <input {...imageDropzone.getInputProps()} />
               <FileImage className="mb-3 h-10 w-10 text-cyan-600 transition group-hover:scale-110" />

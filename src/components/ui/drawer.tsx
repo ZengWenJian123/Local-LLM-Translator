@@ -11,7 +11,7 @@ interface DrawerProps extends PropsWithChildren {
 export function Drawer({ open, onClose, title, children, className }: DrawerProps) {
   if (!open) return null
   return (
-    <div className="fixed inset-0 z-50 flex">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-stretch">
       <button
         type="button"
         className="h-full flex-1 bg-black/40"
@@ -20,7 +20,7 @@ export function Drawer({ open, onClose, title, children, className }: DrawerProp
       />
       <section
         className={cn(
-          'h-full w-full max-w-[460px] border-l border-border bg-background p-5 shadow-2xl',
+          'h-[90vh] w-full rounded-t-2xl border-t border-border bg-background p-4 shadow-2xl sm:h-full sm:max-w-[460px] sm:rounded-none sm:border-l sm:border-t-0 sm:p-5',
           className,
         )}
       >

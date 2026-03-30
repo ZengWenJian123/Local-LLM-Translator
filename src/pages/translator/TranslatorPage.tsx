@@ -24,7 +24,6 @@ export function TranslatorPage() {
   const queryClient = useQueryClient()
   const [historySearch, setHistorySearch] = useState('')
   const [providerConnected, setProviderConnected] = useState(true)
-  const [availableModels, setAvailableModels] = useState<string[]>([])
 
   const ui = useUiStore()
   const translation = useTranslation()
@@ -166,7 +165,7 @@ export function TranslatorPage() {
   }
 
   return (
-    <div className="grid h-screen grid-rows-[auto_1fr_auto] gap-3 bg-background p-3 text-foreground">
+    <div className="grid w-full min-h-screen grid-rows-[auto_auto_auto] gap-3 overflow-x-hidden bg-background p-3 text-foreground lg:h-screen lg:grid-rows-[auto_1fr_auto]">
       <TopToolbar
         inputMode={ui.inputMode}
         sourceLanguage={ui.sourceLanguage}
@@ -189,7 +188,7 @@ export function TranslatorPage() {
         onOpenHistory={() => ui.setHistoryOpen(true)}
       />
 
-      <main className="grid min-h-0 grid-cols-2 gap-3">
+      <main className="grid grid-cols-1 gap-3 lg:min-h-0 lg:grid-cols-2">
         <InputPanel
           mode={ui.inputMode}
           textDraft={ui.textDraft}
@@ -276,7 +275,6 @@ export function TranslatorPage() {
             provider={providerQuery.data}
             settings={settingsQuery.data}
             testingConnection={connectionMutation.isPending}
-            availableModels={availableModels}
             onSaveProvider={async (input) => {
               await saveProviderConfig(input)
               await queryClient.invalidateQueries({ queryKey: ['provider-config'] })
@@ -295,12 +293,9 @@ export function TranslatorPage() {
                 try {
                   const descriptors = await listProviderModels(input)
                   models = descriptors.map((item) => item.name || item.id).filter(Boolean)
-                  setAvailableModels(models)
                 } catch (error) {
                   await notify(`模型列表拉取失败：${normalizeErrorMessage(error)}`)
                 }
-              } else {
-                setAvailableModels([])
               }
 
               return {

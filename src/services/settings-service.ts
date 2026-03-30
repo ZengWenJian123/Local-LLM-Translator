@@ -1,10 +1,17 @@
 import { appSettingsSchema, providerConfigSchema } from '@/schemas/settings'
-import { DEFAULT_APP_SETTINGS, DEFAULT_PROVIDER_CONFIG } from '@/lib/defaults'
+import { DEFAULT_APP_SETTINGS, DEFAULT_PROVIDER_CONFIG, FIXED_MODEL_NAME } from '@/lib/defaults'
 import { invokeIfTauri } from '@/lib/tauri'
 import type { AppSettings, ProviderConfig } from '@/types/core'
 
 const APP_SETTINGS_KEY = 'local-translate:app-settings'
-const PROVIDER_SETTINGS_KEY = 'local-translate:provider-settings'
+let browserProviderConfig: ProviderConfig | null = null
+
+function normalizeProviderConfig(input: ProviderConfig): ProviderConfig {
+  return {
+    ...input,
+    model: FIXED_MODEL_NAME,
+  }
+}
 
 function readLocalStorage<T>(key: string, fallback: T): T {
   const raw = localStorage.getItem(key)
@@ -39,19 +46,23 @@ export async function saveAppSettings(input: AppSettings): Promise<AppSettings> 
 
 export async function getProviderConfig(): Promise<ProviderConfig> {
   const tauriConfig = await invokeIfTauri<ProviderConfig>('settings_get_provider_config')
-  if (tauriConfig) return providerConfigSchema.parse(tauriConfig)
+  if (tauriConfig) {
+    return providerConfigSchema.parse(normalizeProviderConfig(tauriConfig))
+  }
 
-  const fromStorage = readLocalStorage(PROVIDER_SETTINGS_KEY, DEFAULT_PROVIDER_CONFIG)
-  return providerConfigSchema.parse(fromStorage)
+  if (!browserProviderConfig) {
+    browserProviderConfig = providerConfigSchema.parse(normalizeProviderConfig({ ...DEFAULT_PROVIDER_CONFIG }))
+  }
+  return providerConfigSchema.parse(normalizeProviderConfig(browserProviderConfig))
 }
 
 export async function saveProviderConfig(input: ProviderConfig): Promise<ProviderConfig> {
-  const parsed = providerConfigSchema.parse(input)
+  const parsed = providerConfigSchema.parse(normalizeProviderConfig(input))
   const tauriSaved = await invokeIfTauri<ProviderConfig>('settings_save_provider_config', {
     input: parsed,
   })
-  if (tauriSaved) return providerConfigSchema.parse(tauriSaved)
+  if (tauriSaved) return providerConfigSchema.parse(normalizeProviderConfig(tauriSaved))
 
-  writeLocalStorage(PROVIDER_SETTINGS_KEY, parsed)
+  browserProviderConfig = parsed
   return parsed
 }

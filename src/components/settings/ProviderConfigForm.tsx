@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader2, PlugZap } from 'lucide-react'
@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Select } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
+import { DEFAULT_BASE_URL_OPTIONS, FIXED_MODEL_NAME } from '@/lib/defaults'
 import { appSettingsSchema, providerConfigSchema } from '@/schemas/settings'
 import type { AppSettings, ProviderConfig } from '@/types/core'
 
@@ -20,7 +21,6 @@ interface ProviderConfigFormProps {
   provider: ProviderConfig
   settings: AppSettings
   testingConnection: boolean
-  availableModels: string[]
   onSaveProvider: (input: ProviderConfig) => Promise<void>
   onSaveSettings: (input: AppSettings) => Promise<void>
   onTestConnection: (input: ProviderConfig) => Promise<ProviderConnectionFeedback>
@@ -31,23 +31,18 @@ export function ProviderConfigForm(props: ProviderConfigFormProps) {
     provider,
     settings,
     testingConnection,
-    availableModels,
     onSaveProvider,
     onSaveSettings,
     onTestConnection,
   } = props
+
   const [connectionFeedback, setConnectionFeedback] = useState<ProviderConnectionFeedback | null>(null)
-  const [testedModels, setTestedModels] = useState<string[]>(availableModels)
+  const [baseUrlOptionsOpen, setBaseUrlOptionsOpen] = useState(false)
 
   const providerForm = useForm<ProviderConfig>({
     resolver: zodResolver(providerConfigSchema),
     defaultValues: provider,
   })
-
-  const modelOptions = useMemo(() => {
-    const merged = new Set<string>([...availableModels, ...testedModels, providerForm.watch('model')].filter(Boolean))
-    return Array.from(merged)
-  }, [availableModels, providerForm, testedModels])
 
   const settingsForm = useForm<AppSettings>({
     resolver: zodResolver(appSettingsSchema),
@@ -55,16 +50,17 @@ export function ProviderConfigForm(props: ProviderConfigFormProps) {
   })
 
   useEffect(() => {
-    providerForm.reset(provider)
+    providerForm.reset({
+      ...provider,
+      model: FIXED_MODEL_NAME,
+    })
   }, [provider, providerForm])
 
   useEffect(() => {
     settingsForm.reset(settings)
   }, [settings, settingsForm])
 
-  useEffect(() => {
-    setTestedModels(availableModels)
-  }, [availableModels])
+  const baseUrlField = providerForm.register('baseURL')
 
   return (
     <div className="space-y-4">
@@ -76,7 +72,10 @@ export function ProviderConfigForm(props: ProviderConfigFormProps) {
           <form
             className="space-y-3"
             onSubmit={providerForm.handleSubmit(async (values) => {
-              await onSaveProvider(values)
+              await onSaveProvider({
+                ...values,
+                model: FIXED_MODEL_NAME,
+              })
             })}
           >
             <div className="grid grid-cols-1 gap-3">
@@ -84,6 +83,7 @@ export function ProviderConfigForm(props: ProviderConfigFormProps) {
                 Provider 名称
                 <Input {...providerForm.register('name')} />
               </label>
+
               <label className="text-sm">
                 Provider 类型
                 <Select
@@ -96,31 +96,61 @@ export function ProviderConfigForm(props: ProviderConfigFormProps) {
                   <option value="openai-compatible">openai-compatible</option>
                 </Select>
               </label>
+
               <label className="text-sm">
                 Base URL
-                <Input {...providerForm.register('baseURL')} placeholder="http://192.168.20.10:1234" />
+                <div className="relative">
+                  <Input
+                    {...baseUrlField}
+                    placeholder={DEFAULT_BASE_URL_OPTIONS[0]}
+                    onFocus={() => setBaseUrlOptionsOpen(true)}
+                    onClick={() => setBaseUrlOptionsOpen(true)}
+                    onBlur={(event) => {
+                      baseUrlField.onBlur(event)
+                      window.setTimeout(() => setBaseUrlOptionsOpen(false), 120)
+                    }}
+                  />
+                  {baseUrlOptionsOpen ? (
+                    <div className="absolute z-20 mt-1 w-full rounded-md border border-input bg-background p-1 shadow-md">
+                      {DEFAULT_BASE_URL_OPTIONS.map((url) => (
+                        <button
+                          key={url}
+                          type="button"
+                          className="block w-full rounded-sm px-2 py-1 text-left text-sm hover:bg-muted"
+                          onMouseDown={(event) => {
+                            event.preventDefault()
+                            providerForm.setValue('baseURL', url, { shouldDirty: true, shouldValidate: true })
+                            setBaseUrlOptionsOpen(false)
+                          }}
+                        >
+                          {url}
+                        </button>
+                      ))}
+                      <button
+                        type="button"
+                        className="block w-full rounded-sm px-2 py-1 text-left text-sm hover:bg-muted"
+                        onMouseDown={(event) => {
+                          event.preventDefault()
+                          setBaseUrlOptionsOpen(false)
+                        }}
+                      >
+                        自定义（可以输入）
+                      </button>
+                    </div>
+                  ) : null}
+                </div>
               </label>
+
               <label className="text-sm">
                 API Key
                 <Input {...providerForm.register('apiKey')} type="password" placeholder="可选" />
               </label>
+
               <label className="text-sm">
                 模型名称
-                {modelOptions.length > 0 ? (
-                  <Select
-                    value={providerForm.watch('model')}
-                    onChange={(event) => providerForm.setValue('model', event.target.value)}
-                  >
-                    {modelOptions.map((modelName) => (
-                      <option key={modelName} value={modelName}>
-                        {modelName}
-                      </option>
-                    ))}
-                  </Select>
-                ) : (
-                  <Input {...providerForm.register('model')} placeholder="先测试连接后加载可用模型" />
-                )}
+                <Input value={FIXED_MODEL_NAME} readOnly />
               </label>
+
               <label className="text-sm">
                 超时（毫秒）
                 <Input
@@ -129,24 +159,25 @@ export function ProviderConfigForm(props: ProviderConfigFormProps) {
                   onChange={(event) => providerForm.setValue('timeoutMs', Number(event.target.value))}
                 />
               </label>
+
               <Switch
                 label="启用 Provider"
                 checked={providerForm.watch('enabled')}
                 onChange={(event) => providerForm.setValue('enabled', event.target.checked)}
               />
             </div>
+
             <div className="flex gap-2">
               <Button type="submit">保存模型配置</Button>
               <Button
                 type="button"
                 variant="outline"
                 onClick={providerForm.handleSubmit(async (values) => {
-                  const feedback = await onTestConnection(values)
+                  const feedback = await onTestConnection({
+                    ...values,
+                    model: FIXED_MODEL_NAME,
+                  })
                   setConnectionFeedback(feedback)
-                  setTestedModels(feedback.models)
-                  if (feedback.models.length > 0 && !feedback.models.includes(values.model)) {
-                    providerForm.setValue('model', feedback.models[0])
-                  }
                 })}
                 disabled={testingConnection}
               >
