@@ -6,6 +6,7 @@ import { MarkdownContent } from '@/components/common/MarkdownContent'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
+import { clamp } from '@/lib/utils'
 import type { InputMode } from '@/types/core'
 
 interface InputPanelProps {
@@ -49,6 +50,7 @@ export function InputPanel(props: InputPanelProps) {
     onClearInput,
   } = props
   const [previewOpen, setPreviewOpen] = useState(false)
+  const [previewScale, setPreviewScale] = useState(1)
 
   const onImageDrop = useCallback(
     async (acceptedFiles: File[]) => {
@@ -73,6 +75,12 @@ export function InputPanel(props: InputPanelProps) {
     },
     maxFiles: 1,
   })
+
+  const handlePreviewWheel = (event: React.WheelEvent<HTMLDivElement>) => {
+    event.preventDefault()
+    const zoomStep = event.deltaY > 0 ? -0.1 : 0.1
+    setPreviewScale((current) => clamp(Number((current + zoomStep).toFixed(2)), 0.5, 4))
+  }
 
   return (
     <Card className="h-full overflow-hidden border-border/70 bg-card/85 shadow-xl backdrop-blur-sm">
@@ -151,7 +159,10 @@ export function InputPanel(props: InputPanelProps) {
                 <div className="truncate text-sm font-medium">{imageName}</div>
                 <button
                   type="button"
-                  onClick={() => setPreviewOpen(true)}
+                  onClick={() => {
+                    setPreviewScale(1)
+                    setPreviewOpen(true)
+                  }}
                   className="group relative block w-full overflow-hidden rounded-lg border border-border/60"
                   title="点击放大查看"
                 >
@@ -186,19 +197,26 @@ export function InputPanel(props: InputPanelProps) {
       </CardContent>
 
       {previewOpen && imageBase64 ? (
-        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/75 p-5">
+        <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/75 p-5" onWheel={handlePreviewWheel}>
           <button
             type="button"
             className="absolute right-4 top-4 inline-flex items-center gap-1 rounded-md bg-white/10 px-3 py-2 text-sm text-white hover:bg-white/20"
-            onClick={() => setPreviewOpen(false)}
+            onClick={() => {
+              setPreviewScale(1)
+              setPreviewOpen(false)
+            }}
           >
             <X className="h-4 w-4" />
             关闭
           </button>
+          <div className="absolute left-4 top-4 rounded-md bg-white/10 px-3 py-2 text-xs text-white">
+            滚轮缩放：{Math.round(previewScale * 100)}%
+          </div>
           <img
             src={`data:${imageMimeType};base64,${imageBase64}`}
             alt={imageName || 'input-image'}
-            className="max-h-[90vh] max-w-[90vw] rounded-lg border border-white/20 bg-black/20 object-contain"
+            className="max-h-[90vh] max-w-[90vw] rounded-lg border border-white/20 bg-black/20 object-contain transition-transform duration-75"
+            style={{ transform: `scale(${previewScale})` }}
           />
         </div>
       ) : null}
